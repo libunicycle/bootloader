@@ -1,0 +1,4 @@
+bootloader.efi
+bootloader.so
+*.o
+boot.img

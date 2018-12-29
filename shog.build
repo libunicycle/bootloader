@@ -1,0 +1,11 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+
+LDFLAGS=-T glue/x86_64/elf_efi.lds -Bsymbolic -shared -nostdlib -znocombreloc
+CFLAGS="-m64 -mno-red-zone -I. -Iheaders -Iheaders/x86_64 -DGNU_EFI_USE_MS_ABI -fPIC -fshort-wchar -ffreestanding -fno-stack-protector -maccumulate-outgoing-args -Wall -Dx86_64 -Werror"
+
+gcc $CFLAGS bootloader.c -o bootloader.o
+
+ld $LDFLAGS bootloader.o glue/x86_64/relocation_func.o glue/x86_64/start_func.o -o bootloader.so -lefi -lgnuefi
+
+objcopy -j .text -j .sdata -j .data -j .dynamic -j .dynsym -j .rel -j .rela -j .reloc -S --target=efi-app-x86_64 bootloader.so bootloader.efi
